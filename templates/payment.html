@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Payment — The Golden Lantern{% endblock %}
+{% block content %}
+<div class="page-hero page-hero-sm"><h1>Payment</h1></div>
+<div class="payment-page">
+  <form method="post" id="payment-form">
+
+    {% if not customer_id %}
+    <div class="form-card">
+      <h3>Your Info</h3>
+      <div class="field"><label>Name *</label><input type="text" name="guest_name" placeholder="Your full name" required></div>
+      <div class="field"><label>Email (for receipt)</label><input type="email" name="guest_email" placeholder="you@email.com"></div>
+    </div>
+    {% endif %}
+
+    <div class="form-card">
+      <h3>Order Summary</h3>
+      {% for item in items %}
+      <div class="summary-row"><span>{{ item.emoji }} {{ item.name }} ×{{ item.qty }}</span><span>${{ "%.2f"|format(item.line_total) }}</span></div>
+      {% endfor %}
+      <div class="summary-divider"></div>
+      <div class="summary-row"><span>Subtotal</span><span>${{ "%.2f"|format(sub) }}</span></div>
+      <div class="summary-row"><span>Tax (8.75%)</span><span>${{ "%.2f"|format(tax) }}</span></div>
+      <div class="summary-row"><span>Tip</span><span id="tip-display">—</span></div>
+      <div class="summary-row summary-total"><span>Total</span><span id="total-display">—</span></div>
+    </div>
+
+    <div class="form-card">
+      <h3>Payment Method</h3>
+      <div class="pay-opts">
+        <label class="pay-opt selected">
+          <input type="radio" name="pay_method" value="card" checked onchange="selectPay(this.closest('.pay-opt'))">
+          <span class="pay-opt-icon">💳</span><span>Credit / Debit Card</span><div class="radio on"></div>
+        </label>
+        <label class="pay-opt">
+          <input type="radio" name="pay_method" value="apple" onchange="selectPay(this.closest('.pay-opt'))">
+          <span class="pay-opt-icon">🍎</span><span>Apple Pay</span><div class="radio"></div>
+        </label>
+        <label class="pay-opt">
+          <input type="radio" name="pay_method" value="cash" onchange="selectPay(this.closest('.pay-opt'))">
+          <span class="pay-opt-icon">💵</span><span>Cash at Pickup</span><div class="radio"></div>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <h3>Add a Tip</h3>
+      <div class="tip-row">
+        <button type="button" class="tip-btn" onclick="setTip(0,this)">No tip</button>
+        <button type="button" class="tip-btn active" onclick="setTip(15,this)">15%</button>
+        <button type="button" class="tip-btn" onclick="setTip(20,this)">20%</button>
+        <button type="button" class="tip-btn" onclick="setTip(25,this)">25%</button>
+      </div>
+      <input type="hidden" name="tip_pct" id="tip_pct" value="15">
+    </div>
+
+    <div class="form-card">
+      <button type="submit" class="btn-primary btn-block">Pay Now</button>
+      <a href="{{ url_for('cart') }}" class="btn-ghost btn-block" style="text-align:center;display:block;margin-top:8px">← Back to Cart</a>
+    </div>
+
+  </form>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const SUB = {{ sub }}, TAX = {{ tax }};
+let tipPct = 15;
+function setTip(pct, btn) {
+  tipPct = pct;
+  document.querySelectorAll('.tip-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tip_pct').value = pct;
+  const tip   = SUB * pct / 100;
+  const total = SUB + TAX + tip;
+  document.getElementById('tip-display').textContent   = '$' + tip.toFixed(2);
+  document.getElementById('total-display').textContent = '$' + total.toFixed(2);
+}
+function selectPay(el) {
+  document.querySelectorAll('.pay-opt').forEach(o => {
+    o.classList.remove('selected');
+    o.querySelector('.radio').classList.remove('on');
+  });
+  el.classList.add('selected');
+  el.querySelector('.radio').classList.add('on');
+}
+// Init
+setTip(15, document.querySelectorAll('.tip-btn')[1]);
+</script>
+{% endblock %}

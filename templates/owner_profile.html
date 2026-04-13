@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Owner Profile — The Golden Lantern{% endblock %}
+{% block content %}
+<div class="page-hero page-hero-sm"><h1>Owner Profile</h1></div>
+<div class="profile-page">
+  <div class="profile-card">
+    <div class="profile-avatar owner-avatar">{{ owner.avatar or '🔥' }}</div>
+    <div class="profile-name">{{ owner.name or 'Owner' }}</div>
+    <div class="profile-email">{{ owner.email or '' }}</div>
+  </div>
+
+  <div class="form-card">
+    <h3>Update Profile</h3>
+    <form method="post">
+      <input type="hidden" name="action" value="update_profile">
+      <div class="field"><label>Display Name</label><input type="text" name="name" value="{{ owner.name or '' }}"></div>
+      <div class="field"><label>Email</label><input type="email" name="email" value="{{ owner.email or '' }}"></div>
+      <div class="field"><label>Avatar Emoji</label><input type="text" name="avatar" value="{{ owner.avatar or '🔥' }}" maxlength="4"></div>
+      <button type="submit" class="btn-primary">Save Profile</button>
+    </form>
+  </div>
+
+  <div class="form-card">
+    <h3>Change Login Credentials</h3>
+    <p class="form-note">Current username: <strong>{{ owner.username }}</strong></p>
+    <form method="post">
+      <input type="hidden" name="action" value="update_credentials">
+      <div class="field"><label>New Username</label><input type="text" name="new_username" placeholder="New username" required></div>
+      <div class="field"><label>Current Password</label><input type="password" name="old_password" placeholder="Current password" required></div>
+      <div class="field"><label>New Password</label><input type="password" name="new_password" placeholder="New password" required></div>
+      <button type="submit" class="btn-primary">Update Credentials</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

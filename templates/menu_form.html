@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ action }} Dish — The Golden Lantern{% endblock %}
+{% block content %}
+<div class="page-hero page-hero-sm"><h1>{{ action }} Dish</h1></div>
+<div class="profile-page">
+  <div class="form-card">
+    <form method="post">
+      <div class="field">
+        <label>Section</label>
+        <select name="section">
+          {% for sec in sections %}
+          <option value="{{ sec }}" {% if dish and dish.section==sec %}selected{% endif %}>{{ sec }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field"><label>Name</label><input type="text" name="name" value="{{ dish.name if dish else '' }}" placeholder="Dish name" required></div>
+      <div class="field"><label>Description</label><input type="text" name="desc" value="{{ dish.desc if dish else '' }}" placeholder="Brief description"></div>
+      <div class="field"><label>Price ($)</label><input type="number" name="price" value="{{ dish.price if dish else '' }}" step="0.01" min="0" placeholder="0.00" required></div>
+      <div class="field"><label>Emoji</label><input type="text" name="emoji" value="{{ dish.emoji if dish else '🍽️' }}" maxlength="4" placeholder="🍖"></div>
+      <button type="submit" class="btn-primary">{{ action }} Dish</button>
+      <a href="{{ url_for('admin_menu') }}" class="btn-ghost" style="display:inline-block;margin-left:10px">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

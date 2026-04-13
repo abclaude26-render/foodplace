@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Email Log — The Golden Lantern{% endblock %}
+{% block content %}
+<div class="page-hero page-hero-sm"><h1>Simulated Email Log</h1><p>Emails that would be sent to customers</p></div>
+<div class="dashboard-page">
+  <div class="email-notice" style="margin-bottom:24px">
+    ⚠️ These are <strong>simulated emails</strong> stored in the database. To send real emails, configure SMTP credentials in <code>app.py</code> (EMAIL_CONFIG) and set <code>enabled: True</code>. Recommended services: SendGrid, Mailgun, or Resend.
+  </div>
+  {% if not emails %}
+  <div class="empty-state"><div class="empty-icon">📧</div><h2>No emails yet</h2></div>
+  {% else %}
+  {% for em in emails %}
+  <div class="dash-order-card" style="margin-bottom:14px">
+    <div class="dash-order-header">
+      <div>
+        <div class="dash-order-cust">To: <strong>{{ em.to_addr }}</strong></div>
+        <div class="dash-order-id">{{ em.subject }}</div>
+        <div class="dash-order-time">{{ em.sent_at[:16].replace('T',' ') }}</div>
+      </div>
+      {% if em.order_ref %}<span class="status-badge status-not-started">{{ em.order_ref }}</span>{% endif %}
+    </div>
+    <pre class="email-body-pre">{{ em.body }}</pre>
+  </div>
+  {% endfor %}
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Reviews — The Golden Lantern{% endblock %}
+{% block content %}
+<div class="page-hero page-hero-sm">
+  <h1>Reviews</h1>
+  {% if avg and avg.cnt %}
+  <div class="avg-rating">
+    {% for i in range(5) %}<span class="star {% if i < (avg.avg|round|int) %}filled{% endif %}">★</span>{% endfor %}
+    <span>{{ "%.1f"|format(avg.avg) }} out of 5 &nbsp;({{ avg.cnt }} review{{ 's' if avg.cnt != 1 }})</span>
+  </div>
+  {% endif %}
+</div>
+<div class="reviews-page">
+
+  {% if not owner_view %}
+    {% if customer_id %}
+    <div class="review-form-card">
+      <h3>Share Your Experience</h3>
+      <form method="post">
+        <div class="star-picker" id="star-picker">
+          {% for i in range(1,6) %}
+          <input type="radio" name="rating" id="star{{ i }}" value="{{ i }}" class="star-radio" {% if loop.last %}{% endif %}>
+          <label for="star{{ i }}" class="star-pick">★</label>
+          {% endfor %}
+        </div>
+        <div class="field" style="margin-top:16px">
+          <label>Your Review</label>
+          <textarea name="body" rows="4" placeholder="Tell us about your visit..." required></textarea>
+        </div>
+        <button type="submit" class="btn-primary">Submit Review</button>
+      </form>
+    </div>
+    {% else %}
+    <div class="login-prompt">
+      <p>Want to leave a review? <a href="{{ url_for('login') }}">Sign in</a> or <a href="{{ url_for('register') }}">create an account</a>.</p>
+    </div>
+    {% endif %}
+  {% endif %}
+
+  <div class="reviews-list">
+    {% if not reviews %}
+    <div class="empty-state">
+      <div class="empty-icon">⭐</div>
+      <h2>No reviews yet</h2>
+      <p>Be the first to leave a review!</p>
+    </div>
+    {% else %}
+    {% for r in reviews %}
+    <div class="review-card">
+      <div class="review-card-header">
+        <div class="review-avatar">{{ r.name[0].upper() }}</div>
+        <div>
+          <div class="review-name">{{ r.name }}</div>
+          <div class="review-date">{{ r.created[:16].replace('T',' ') }}</div>
+        </div>
+        <div class="review-stars ml-auto">
+          {% for i in range(5) %}<span class="star {% if i < r.rating %}filled{% endif %}">★</span>{% endfor %}
+        </div>
+      </div>
+      <p class="review-body">{{ r.body }}</p>
+    </div>
+    {% endfor %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<style>
+.star-radio { display:none; }
+.star-pick { font-size:32px; cursor:pointer; color:#ddd; transition:color .15s; }
+.star-radio:checked ~ label, .star-pick:hover { color:var(--amber); }
+#star-picker { display:flex; flex-direction:row-reverse; gap:4px; width:fit-content; }
+#star-picker .star-pick:hover,
+#star-picker .star-pick:hover ~ label { color:var(--amber) !important; }
+#star-picker input:checked ~ label { color:var(--amber) !important; }
+</style>
+{% endblock %}

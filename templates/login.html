@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Sign In — The Golden Lantern{% endblock %}
+{% block content %}
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">🔥</div>
+    <h2>Welcome Back</h2>
+    <p class="auth-sub">Sign in to your account</p>
+
+    <div class="auth-mode-toggle">
+      <button class="mode-btn active" id="btn-cust" onclick="authMode('customer')">Customer</button>
+      <button class="mode-btn" id="btn-owner" onclick="authMode('owner')">Owner</button>
+    </div>
+
+    <!-- Customer Login -->
+    <div id="panel-customer">
+      <form method="post">
+        <input type="hidden" name="mode" value="customer">
+        <div class="field"><label>Email</label><input type="email" name="email" placeholder="you@email.com" required></div>
+        <div class="field"><label>Password</label><input type="password" name="password" placeholder="Password" required></div>
+        <button type="submit" class="btn-primary btn-block">Sign In</button>
+      </form>
+      <div class="auth-footer">No account? <a href="{{ url_for('register') }}">Create one →</a></div>
+    </div>
+
+    <!-- Owner Login -->
+    <div id="panel-owner" style="display:none">
+      <form method="post">
+        <input type="hidden" name="mode" value="owner">
+        <div class="field"><label>Username</label><input type="text" name="username" placeholder="Username" required></div>
+        <div class="field"><label>Password</label><input type="password" name="password" placeholder="Password" required></div>
+        <button type="submit" class="btn-primary btn-block">Sign In as Owner</button>
+      </form>
+    </div>
+
+    <div class="auth-footer-back">
+      <a href="{{ url_for('index') }}" class="btn-ghost btn-sm">← Back to Home</a>
+      <a href="{{ url_for('menu') }}" class="btn-ghost btn-sm">Browse as Guest</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function authMode(mode) {
+  document.getElementById('btn-cust').classList.toggle('active', mode==='customer');
+  document.getElementById('btn-owner').classList.toggle('active', mode==='owner');
+  document.getElementById('panel-customer').style.display = mode==='customer'?'':'none';
+  document.getElementById('panel-owner').style.display    = mode==='owner'?'':'none';
+}
+</script>
+{% endblock %}

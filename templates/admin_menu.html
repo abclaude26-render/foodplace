@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Menu Manager — The Golden Lantern{% endblock %}
+{% block content %}
+<div class="page-hero page-hero-sm"><h1>Menu Manager</h1></div>
+<div class="admin-page">
+  <div class="admin-toolbar">
+    <div class="admin-filters">
+      <a href="{{ url_for('admin_menu') }}" class="admin-filter {% if section=='All' %}active{% endif %}">All</a>
+      {% for sec in sections %}
+      <a href="{{ url_for('admin_menu', section=sec) }}" class="admin-filter {% if section==sec %}active{% endif %}">{{ sec }}</a>
+      {% endfor %}
+    </div>
+    <a href="{{ url_for('menu_add') }}" class="btn-primary">+ Add Dish</a>
+  </div>
+
+  {% if not items %}
+  <div class="empty-state"><div class="empty-icon">🍽️</div><h2>No dishes found</h2></div>
+  {% else %}
+  <div class="admin-list">
+    {% for d in items %}
+    <div class="admin-card">
+      <div class="admin-card-emoji">{{ d.emoji }}</div>
+      <div class="admin-card-info">
+        <div class="admin-card-name">{{ d.name }}</div>
+        <div class="admin-card-meta">{{ d.section }} · ${{ "%.2f"|format(d.price) }}</div>
+        <div class="admin-card-desc">{{ d.desc }}</div>
+      </div>
+      <div class="admin-card-btns">
+        <a href="{{ url_for('menu_edit', dish_id=d.id) }}" class="btn-sm btn-ghost">Edit</a>
+        <form method="post" action="{{ url_for('menu_delete', dish_id=d.id) }}" onsubmit="return confirm('Remove this dish?')">
+          <button type="submit" class="btn-sm btn-danger">Remove</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}My Orders — The Golden Lantern{% endblock %}
+{% block content %}
+<div class="page-hero page-hero-sm"><h1>My Orders</h1></div>
+<div class="orders-page">
+  {% if not orders %}
+  <div class="empty-state">
+    <div class="empty-icon">📋</div>
+    <h2>No orders yet</h2>
+    <p>Your orders will appear here once you place one.</p>
+    <a href="{{ url_for('menu') }}" class="btn-primary">Browse Menu</a>
+  </div>
+  {% else %}
+  {% for o in orders %}
+  <div class="order-card" id="order-{{ o.id }}">
+    <div class="order-card-header">
+      <div>
+        <div class="order-id">{{ o.order_ref }}</div>
+        <div class="order-date">{{ o.placed_at[:16].replace('T',' ') }}</div>
+      </div>
+      <span class="status-badge status-{{ o.status|lower|replace(' ','-') }}">{{ o.status }}</span>
+    </div>
+    <div class="order-items-list">
+      {% for it in order_items_map[o.id] %}
+      <div class="order-item-row">
+        <span>{{ it.emoji }} {{ it.name }}</span>
+        <span>×{{ it.qty }} — ${{ "%.2f"|format(it.subtotal) }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="order-card-footer">
+      <span>Total: <strong>${{ "%.2f"|format(o.total) }}</strong></span>
+      <a href="{{ url_for('reviews') }}" class="btn-sm btn-ghost">Leave a Review</a>
+    </div>
+  </div>
+  {% endfor %}
+  {% endif %}
+</div>
+{% endblock %}

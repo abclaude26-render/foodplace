@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Cart — The Golden Lantern{% endblock %}
+{% block content %}
+<div class="page-hero page-hero-sm"><h1>Your Cart</h1></div>
+<div class="cart-page">
+  {% if not items %}
+  <div class="empty-state">
+    <div class="empty-icon">🛒</div>
+    <h2>Your cart is empty</h2>
+    <p>Add some delicious items from our menu.</p>
+    <a href="{{ url_for('menu') }}" class="btn-primary">Browse Menu</a>
+  </div>
+  {% else %}
+  <div class="cart-items">
+    {% for item in items %}
+    <div class="cart-row">
+      <span class="cart-emoji">{{ item.emoji }}</span>
+      <div class="cart-info">
+        <div class="cart-name">{{ item.name }}</div>
+        <div class="cart-price-each">${{ "%.2f"|format(item.price) }} each</div>
+      </div>
+      <div class="qty-ctrl">
+        <form method="post" action="{{ url_for('cart_remove', item_id=item.id) }}" style="display:inline">
+          <button class="qty-btn" type="submit">−</button>
+        </form>
+        <span class="qty-num">{{ item.qty }}</span>
+        <form method="post" action="{{ url_for('cart_add', item_id=item.id) }}" style="display:inline">
+          <button class="qty-btn" type="submit">+</button>
+        </form>
+      </div>
+      <div class="cart-line-total">${{ "%.2f"|format(item.line_total) }}</div>
+      <form method="post" action="{{ url_for('cart_delete', item_id=item.id) }}" style="display:inline">
+        <button class="cart-delete-btn" type="submit" title="Remove">✕</button>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="cart-summary">
+    <div class="summary-row"><span>Subtotal</span><span>${{ "%.2f"|format(sub) }}</span></div>
+    <div class="summary-row"><span>Tax (8.75%)</span><span>${{ "%.2f"|format(tax) }}</span></div>
+    <div class="summary-row summary-total"><span>Total</span><span>${{ "%.2f"|format(total) }}</span></div>
+    <a href="{{ url_for('payment') }}" class="btn-primary btn-block" style="text-align:center;display:block;margin-top:16px">Proceed to Payment</a>
+    <a href="{{ url_for('menu') }}" class="btn-ghost btn-block" style="text-align:center;display:block;margin-top:8px">Add More Items</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — The Golden Lantern{% endblock %}
+{% block content %}
+<div class="page-hero page-hero-sm"><h1>Dashboard</h1><p>Manage your restaurant orders</p></div>
+<div class="dashboard-page">
+
+  <div class="dash-stats">
+    <div class="stat-card"><div class="stat-num">{{ stats.total }}</div><div class="stat-label">Total Orders</div></div>
+    <div class="stat-card"><div class="stat-num">{{ stats.not_started }}</div><div class="stat-label">Not Started</div></div>
+    <div class="stat-card"><div class="stat-num">{{ stats.in_progress }}</div><div class="stat-label">In Progress</div></div>
+    <div class="stat-card"><div class="stat-num">{{ stats.ready }}</div><div class="stat-label">Ready</div></div>
+    <div class="stat-card"><div class="stat-num">{{ stats.delivered }}</div><div class="stat-label">Delivered</div></div>
+    <div class="stat-card"><div class="stat-num">${{ "%.2f"|format(stats.revenue) }}</div><div class="stat-label">Revenue</div></div>
+  </div>
+
+  <h2 class="section-h2">All Orders <span class="count-badge">{{ stats.total }}</span></h2>
+
+  {% if not orders %}
+  <div class="empty-state"><div class="empty-icon">📋</div><h2>No orders yet</h2></div>
+  {% else %}
+  {% for o in orders %}
+  <div class="dash-order-card" id="order-{{ o.id }}">
+    <div class="dash-order-header">
+      <div>
+        <div class="dash-order-id">{{ o.order_ref }}</div>
+        <div class="dash-order-cust"><strong>{{ o.customer_name }}</strong> — {{ o.customer_email or 'Guest' }}</div>
+        <div class="dash-order-time">⏱ {{ o.placed_at[:16].replace('T',' ') }}</div>
+      </div>
+      <div class="dash-order-right">
+        <span class="status-badge status-{{ o.status|lower|replace(' ','-') }}" id="sbadge-{{ o.id }}">{{ o.status }}</span>
+        <div class="dash-total">${{ "%.2f"|format(o.total) }}</div>
+      </div>
+    </div>
+    <div class="dash-order-items">
+      {% for it in order_items_map[o.id] %}
+      <span class="item-pill">{{ it.emoji }} {{ it.name }} ×{{ it.qty }}</span>
+      {% endfor %}
+    </div>
+    <div class="dash-status-controls">
+      <span class="status-label">Update status:</span>
+      {% for s in ['Not Started','In Progress','Ready','Delivered'] %}
+      <button class="status-btn {% if o.status==s %}active{% endif %}"
+              onclick="updateStatus({{ o.id }}, '{{ s }}', this)">{{ s }}</button>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+  {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function updateStatus(orderId, status, btn) {
+  fetch('/api/order/' + orderId + '/status', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({status})
+  }).then(r => r.json()).then(data => {
+    if (data.ok) {
+      const card  = document.getElementById('order-' + orderId);
+      const badge = document.getElementById('sbadge-' + orderId);
+      badge.textContent = status;
+      badge.className   = 'status-badge status-' + status.toLowerCase().replace(/ /g,'-');
+      card.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  });
+}
+</script>
+{% endblock %}

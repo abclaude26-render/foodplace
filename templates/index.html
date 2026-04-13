@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}The Golden Lantern{% endblock %}
+{% block content %}
+
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Est. 2018 &nbsp;·&nbsp; Smoke. Fire. Flavor.</div>
+    <h1 class="hero-title">The Golden<em>Lantern</em></h1>
+    <div class="hero-badges">
+      <span class="hero-badge">🪵 Slow-smoked daily</span>
+      <span class="hero-badge">🌽 Scratch kitchen</span>
+      {% if avg_rating %}<span class="hero-badge">⭐ {{ avg_rating }} stars</span>{% endif %}
+    </div>
+    <p class="hero-desc">Real wood smoke, bold flavors, and recipes passed down through generations. Where every plate tells a story.</p>
+    <div class="hero-btns">
+      <a href="{{ url_for('menu') }}" class="btn-primary btn-lg">Order Now</a>
+      <a href="{{ url_for('reviews') }}" class="btn-ghost btn-lg">Read Reviews</a>
+    </div>
+  </div>
+</div>
+
+<section class="features-section">
+  <div class="features-grid">
+    <div class="feature-card"><div class="feature-icon">🔥</div><h3>12-Hour Smoke</h3><p>Every cut slow-smoked over real oak and hickory — no shortcuts, ever.</p></div>
+    <div class="feature-card"><div class="feature-icon">🧑‍🍳</div><h3>Scratch Kitchen</h3><p>Every sauce, rub, and side made in-house from scratch every single morning.</p></div>
+    <div class="feature-card"><div class="feature-icon">❤️</div><h3>Family Owned</h3><p>Proudly independent and community-driven since day one.</p></div>
+  </div>
+</section>
+
+{% if reviews %}
+<section class="reviews-preview-section">
+  <div class="section-header">
+    <span class="section-label">What People Say</span>
+    <h2>Recent Reviews</h2>
+  </div>
+  <div class="reviews-grid">
+    {% for r in reviews %}
+    <div class="review-card">
+      <div class="review-stars">{% for i in range(5) %}<span class="star {% if i < r.rating %}filled{% endif %}">★</span>{% endfor %}</div>
+      <p class="review-text">"{{ r.body }}"</p>
+      <div class="review-meta"><strong>{{ r.name }}</strong> · {{ r.created[:10] }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="center-row"><a href="{{ url_for('reviews') }}" class="btn-ghost">All Reviews →</a></div>
+</section>
+{% endif %}
+
+<section class="cta-section">
+  <div class="cta-inner">
+    <h2>Ready to order?</h2>
+    <p>Browse our full menu and place your order online.</p>
+    <a href="{{ url_for('menu') }}" class="btn-primary btn-lg">See the Menu</a>
+  </div>
+</section>
+
+{% endblock %}

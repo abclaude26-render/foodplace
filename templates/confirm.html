@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Order Confirmed — The Golden Lantern{% endblock %}
+{% block content %}
+<div class="confirm-page">
+  <div class="confirm-logo-wrap">
+    <svg width="140" height="140" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="70" cy="70" r="68" fill="#7B2D00"/>
+      <circle cx="70" cy="70" r="56" fill="#5C2000"/>
+      <text x="70" y="92" text-anchor="middle" font-size="58">🔥</text>
+      <path d="M24 106 Q70 124 116 106" stroke="#F5A623" stroke-width="3" fill="none"/>
+      <text x="70" y="132" text-anchor="middle" fill="#F5A623" font-size="7.5" font-family="Georgia,serif" font-weight="bold" letter-spacing="2">THE GOLDEN LANTERN</text>
+    </svg>
+  </div>
+  <h1 class="confirm-title">Order Confirmed!</h1>
+  <p class="confirm-sub">Thank you, <strong>{{ order.customer_name }}</strong>! Your food is being prepared.</p>
+
+  <div class="receipt-card">
+    <div class="receipt-id">Order {{ order.order_ref }}</div>
+    {% for it in items %}
+    <div class="receipt-row"><span>{{ it.emoji }} {{ it.name }} ×{{ it.qty }}</span><span>${{ "%.2f"|format(it.subtotal) }}</span></div>
+    {% endfor %}
+    <div class="receipt-divider"></div>
+    <div class="receipt-row"><span>Subtotal</span><span>${{ "%.2f"|format(order.subtotal) }}</span></div>
+    <div class="receipt-row"><span>Tax (8.75%)</span><span>${{ "%.2f"|format(order.tax) }}</span></div>
+    {% if order.tip > 0 %}
+    <div class="receipt-row"><span>Tip ({{ order.tip_pct }}%)</span><span>${{ "%.2f"|format(order.tip) }}</span></div>
+    {% endif %}
+    <div class="receipt-row receipt-total"><span>Total Paid</span><span>${{ "%.2f"|format(order.total) }}</span></div>
+    <div class="receipt-row"><span>Payment</span><span>{{ {'card':'Credit Card','apple':'Apple Pay','cash':'Cash'}.get(order.pay_method,'—') }}</span></div>
+  </div>
+
+  <div class="wait-badge">⏱ Estimated wait: <strong>{{ order.wait_minutes }} minutes</strong></div>
+
+  {% if email_log %}
+  <div class="email-notice">
+    📧 Confirmation email sent to <strong>{{ order.customer_email }}</strong><br>
+    <a href="{{ url_for('owner_emails') }}" class="link">View simulated email log ↗</a>
+  </div>
+  {% endif %}
+
+  <div class="see-soon">See you soon! 🔥</div>
+
+  <div class="confirm-actions">
+    <a href="{{ url_for('menu') }}" class="btn-primary">Place New Order</a>
+    {% if customer_id %}
+    <a href="{{ url_for('orders') }}" class="btn-ghost">My Orders</a>
+    {% endif %}
+    <a href="{{ url_for('reviews') }}" class="btn-ghost">Leave a Review</a>
+  </div>
+</div>
+{% endblock %}
